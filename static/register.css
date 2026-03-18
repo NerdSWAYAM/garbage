@@ -50,7 +50,7 @@ form {
     gap: 15px;
 }
 
-input[type="text"],
+input[type="text"],input[type="email"],
 input[type="password"] {
     width: 100%;
     padding: 16px;
@@ -62,12 +62,12 @@ input[type="password"] {
     transition: all 0.3s ease;
 }
 
-input[type="text"]::placeholder,
+input[type="text"]::placeholder,input[type="email"]::placeholder,
 input[type="password"]::placeholder {
     color: #9ba4b5;
 }
 
-input[type="text"]:focus,
+input[type="text"]:focus,input[type="email"]:focus,
 input[type="password"]:focus {
     outline: none;
     border-color: #89f7fe;
