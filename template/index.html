@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Waste Classifier - Image Upload</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='index.css') }}">
+    <!-- Add Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <nav>
+        <div class="nav-left">
+            <a href="/">Waste Classifier</a>
+        </div>
+        <div class="nav-right">
+            <a href="/login">Login</a>
+            <a href="/register">Register</a>
+            <a href="/dashboard">Dashboard</a>
+        </div>
+    </nav>
+    <div class="container">
+        <h1 class="title">Image-based Waste Classifier</h1>
+        <p class="subtitle">Select an image to classify</p>
+        
+        <div class="file-input-wrapper">
+            <input type="file" id="imageInput" accept="image/*" onchange="updateFileName()">
+            <label for="imageInput" class="file-label" id="fileLabel">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" id="uploadIcon">
+                    <path d="M19 13v5c0 1.103-.897 2-2 2H7c-1.103 0-2-.897-2-2v-5H3v5c0 2.206 1.794 4 4 4h10c2.206 0 4-1.794 4-4v-5h-2zm-7-9.586-3.293 3.293-1.414-1.414L12 0l4.707 5.293-1.414 1.414L12 3.414z"/>
+                    <path d="M11 2h2v15h-2z"/>
+                </svg>
+                <span id="uploadText">Click to browse</span>
+                <div id="fileName"></div>
+                <img id="imagePreview" src="" alt="Image Preview" style="display: none;" />
+            </label>
+        </div>
+
+        <div class="camera-wrapper">
+            <p class="subtitle" style="margin-bottom: 0.5rem; margin-top: -0.5rem;">Or</p>
+            <button id="openCameraBtn" type="button" class="secondary-btn" onclick="startCamera()">Open Camera</button>
+            <div id="cameraContainer" style="display: none; margin-top: 1rem;">
+                <video id="videoElement" autoplay playsinline style="width: 100%; border-radius: 0.75rem; background: #000;"></video>
+                <div style="display: flex; gap: 10px; margin-top: 0.75rem;">
+                    <button id="captureBtn" type="button" class="capture-btn" onclick="capturePhoto()">Capture</button>
+                    <button id="closeCameraBtn" type="button" class="close-btn" onclick="stopCamera()">Close</button>
+                </div>
+                <canvas id="canvasElement" style="display: none;"></canvas>
+            </div>
+        </div>
+
+        <button onclick="displayDone()" style="margin-top: 1.5rem;">Submit</button>
+        <p id="message"></p>
+    </div>
+
+    <!-- Impact Information Panel -->
+    <div class="impact-panel" id="impactPanel" style="display: none;">
+        <h2>Environmental Impact</h2>
+        <div class="impact-content">
+            <p><strong>Predicted Item:</strong> <span id="impactItem">---</span></p>
+            <p><strong>CO2 Emission:</strong> <span id="impactCO2">---</span></p>
+            <p><strong>Category:</strong> <span id="impactCategory">---</span></p>
+            <p><strong>Recycle:</strong> <span id="impactRecycle">---</span></p>
+        </div>
+        <button class="map-btn" onclick="window.location.href='/map'">Find Nearest Bins</button>
+    </div>
+
+    <script>
+        function updateFileName() {
+            const input = document.getElementById('imageInput');
+            const fileNameDisplay = document.getElementById('fileName');
+            const imagePreview = document.getElementById('imagePreview');
+            const uploadIcon = document.getElementById('uploadIcon');
+            const uploadText = document.getElementById('uploadText');
+            const fileLabel = document.getElementById('fileLabel');
+            const impactPanel = document.getElementById('impactPanel');
+
+            if (input.files && input.files.length > 0) {
+                const file = input.files[0];
+                fileNameDisplay.textContent = "Selected: " + file.name;
+                
+                // Show preview
+                const objectUrl = URL.createObjectURL(file);
+                imagePreview.src = objectUrl;
+                imagePreview.style.display = 'block';
+                
+                // Hide default icons and text
+                uploadIcon.style.display = 'none';
+                uploadText.style.display = 'none';
+                fileLabel.classList.add('has-image');
+            } else {
+                fileNameDisplay.textContent = "";
+                imagePreview.style.display = 'none';
+                imagePreview.src = "";
+                uploadIcon.style.display = 'block';
+                uploadText.style.display = 'block';
+                fileLabel.classList.remove('has-image');
+                impactPanel.style.display = 'none'; // hide impact if cleared
+            }
+            // Reset message
+            const messageEl = document.getElementById('message');
+            messageEl.classList.remove('show');
+            setTimeout(() => { messageEl.innerText = ''; }, 400);
+        }
+
+        function displayDone() {
+            const fileInput = document.getElementById('imageInput');
+            const messageEl = document.getElementById('message');
+            const impactPanel = document.getElementById('impactPanel');
+            
+            if (!fileInput.files || fileInput.files.length === 0) {
+                messageEl.innerText = 'Please select an image first!';
+                messageEl.style.color = '#ef4444'; // Red error text
+                messageEl.classList.add('show');
+                return;
+            }
+
+            const file = fileInput.files[0];
+            const formData = new FormData();
+            formData.append('file', file);
+            
+            messageEl.innerText = 'Processing...';
+            messageEl.style.color = '#eab308'; // Yellow waiting text
+            messageEl.classList.add('show');
+            impactPanel.style.display = 'none'; // reset panel
+
+            fetch('/predict', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if(data.error) {
+                    messageEl.innerText = 'Error: ' + data.error;
+                    messageEl.style.color = '#ef4444';
+                } else {
+                    messageEl.innerText = 'Output: ' + data.prediction;
+                    messageEl.style.color = '#4ade80'; // Green success text
+                    
+                    if (data.impact) {
+                        document.getElementById('impactItem').innerText = data.prediction;
+                        document.getElementById('impactCO2').innerText = data.impact.co2_emission || "N/A";
+                        document.getElementById('impactCategory').innerText = data.impact.category || "N/A";
+                        document.getElementById('impactRecycle').innerText = data.impact.recycle || "N/A";
+                        impactPanel.style.display = 'flex'; // show the panel
+                    }
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                messageEl.innerText = 'An error occurred';
+                messageEl.style.color = '#ef4444';
+            });
+        }
+        let stream = null;
+
+        function startCamera() {
+            const video = document.getElementById('videoElement');
+            const cameraContainer = document.getElementById('cameraContainer');
+            const openBtn = document.getElementById('openCameraBtn');
+
+            navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } })
+                .then(s => {
+                    stream = s;
+                    video.srcObject = stream;
+                    cameraContainer.style.display = 'block';
+                    openBtn.style.display = 'none';
+                })
+                .catch(err => {
+                    console.error("Camera access error:", err);
+                    alert("Could not access camera. Please allow camera permissions.");
+                });
+        }
+
+        function stopCamera() {
+            if (stream) {
+                stream.getTracks().forEach(track => track.stop());
+                stream = null;
+            }
+            document.getElementById('cameraContainer').style.display = 'none';
+            document.getElementById('openCameraBtn').style.display = 'block';
+        }
+
+        function capturePhoto() {
+            const video = document.getElementById('videoElement');
+            const canvas = document.getElementById('canvasElement');
+            
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+            
+            canvas.toBlob(blob => {
+                const file = new File([blob], "camera_capture.jpg", { type: "image/jpeg" });
+                
+                // Create a DataTransfer to simulate a file input change
+                const dataTransfer = new DataTransfer();
+                dataTransfer.items.add(file);
+                
+                const fileInput = document.getElementById('imageInput');
+                fileInput.files = dataTransfer.files;
+                
+                // Trigger the existing updateFileName function
+                updateFileName();
+                
+                // Stop the camera
+                stopCamera();
+            }, 'image/jpeg', 0.9);
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,62 @@
+{
+  "battery": {
+    "co2_emission": "8.0 kg CO2/kg",
+    "category": "e_waste",
+    "recycle": "Yes"
+  },
+  "biological": {
+    "co2_emission": "0.5 kg CO2/kg",
+    "category": "wet",
+    "recycle": "Yes (compost)"
+  },
+  "brown-glass": {
+    "co2_emission": "3.0 kg CO2/kg",
+    "category": "dry",
+    "recycle": "Yes"
+  },
+  "cardboard": {
+    "co2_emission": "1.5 kg CO2/kg",
+    "category": "dry",
+    "recycle": "Yes"
+  },
+  "clothes": {
+    "co2_emission": "2.5 kg CO2/kg",
+    "category": "dry",
+    "recycle": "Yes (reuse/donate)"
+  },
+  "green-glass": {
+    "co2_emission": "3.0 kg CO2/kg",
+    "category": "dry",
+    "recycle": "Yes"
+  },
+  "metal": {
+    "co2_emission": "4.0 kg CO2/kg",
+    "category": "dry",
+    "recycle": "Yes"
+  },
+  "paper": {
+    "co2_emission": "1.5 kg CO2/kg",
+    "category": "dry",
+    "recycle": "Yes"
+  },
+  "plastic": {
+    "co2_emission": "6.0 kg CO2/kg",
+    "category": "dry",
+    "recycle": "Yes (type-dependent)"
+  },
+  "shoes": {
+    "co2_emission": "3.5 kg CO2/kg",
+    "category": "dry",
+    "recycle": "Yes (reuse/donate)"
+  },
+  "trash": {
+    "co2_emission": "7.0 kg CO2/kg",
+    "category": "dry",
+    "recycle": "No"
+  },
+  "white-glass": {
+    "co2_emission": "3.0 kg CO2/kg",
+    "category": "dry",
+    "recycle": "Yes"
+  }
+}

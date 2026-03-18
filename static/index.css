@@ -1,0 +1,288 @@
+:root {
+    --primary-bg: #f8fafc;
+    --surface-bg: #ffffff;
+    --accent-color: #764ba2;
+    --accent-hover: #764ba2;
+    --text-main: #0f172a;
+    --text-secondary: #64748b;
+}
+
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background-color: var(--primary-bg);
+    color: var(--text-main);
+    margin: 0;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    min-height: 100vh;
+    padding-left: 5vw;
+    /* Position the container towards the left side */
+}
+
+nav {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 5vw;
+    background-color: var(--surface-bg);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+    z-index: 1000;
+    box-sizing: border-box;
+}
+
+.nav-left a {
+    font-size: 1.5rem;
+    margin: 0;
+    font-weight: 700;
+    color: var(--accent-color);
+    text-decoration: none;
+}
+
+.nav-right a {
+    text-decoration: none;
+    color: var(--text-secondary);
+    margin-left: 1.5rem;
+    font-weight: 500;
+    transition: color 0.3s ease;
+}
+
+.nav-right a:hover {
+    color: var(--accent-color);
+}
+
+.container {
+    background-color: var(--primary-bg);
+    padding: 2.5rem;
+    /* border-radius: 1rem; */
+    /* box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1); */
+    text-align: center;
+    max-width: 400px;
+    width: 100%;
+    /* border: 1px solid rgba(0, 0, 0, 0.05); */
+    transition: transform 0.3s ease;
+}
+
+/* .container:hover {
+            transform: translateY(-5px);
+        } */
+
+h1 {
+    margin-top: 0;
+    font-size: 1.75rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.title {
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+}
+
+p.subtitle {
+    color: var(--text-secondary);
+    margin-bottom: 2rem;
+    font-size: 0.95rem;
+}
+
+.file-input-wrapper {
+    position: relative;
+    margin-bottom: 1.5rem;
+}
+
+input[type="file"] {
+    display: none;
+}
+
+.file-label {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    border: 2px dashed rgba(0, 0, 0, 0.15);
+    border-radius: 0.75rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    color: var(--text-secondary);
+    background-color: rgba(0, 0, 0, 0.02);
+}
+
+.file-label:hover {
+    border-color: var(--accent-color);
+    color: var(--accent-color);
+    background-color: rgba(59, 130, 246, 0.05);
+}
+
+.file-label object,
+.file-label svg {
+    width: 40px;
+    height: 40px;
+    margin-bottom: 0.5rem;
+    fill: currentColor;
+}
+
+button {
+    background-color: var(--accent-color);
+    color: white;
+    border: none;
+    padding: 0.75rem 2rem;
+    border-radius: 9999px;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    width: 100%;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.3);
+}
+
+button:hover {
+    background-color: var(--accent-hover);
+    transform: scale(1.02);
+    box-shadow: 0 6px 8px -2px rgba(59, 130, 246, 0.5);
+}
+
+button:active {
+    transform: scale(0.98);
+}
+
+.secondary-btn {
+    background-color: var(--surface-bg);
+    color: var(--text-main);
+    border: 2px solid rgba(0, 0, 0, 0.15);
+    box-shadow: none;
+}
+
+.secondary-btn:hover {
+    background-color: rgba(0, 0, 0, 0.02);
+    border-color: var(--text-secondary);
+    color: var(--text-main);
+    box-shadow: none;
+}
+
+.capture-btn {
+    background-color: #f59e0b;
+    box-shadow: 0 4px 6px -1px rgba(245, 158, 11, 0.3);
+    flex: 1;
+}
+
+.capture-btn:hover {
+    background-color: #d97706;
+    box-shadow: 0 6px 8px -2px rgba(245, 158, 11, 0.5);
+}
+
+.close-btn {
+    background-color: #ef4444;
+    box-shadow: 0 4px 6px -1px rgba(239, 68, 68, 0.3);
+    flex: 1;
+}
+
+.close-btn:hover {
+    background-color: #dc2626;
+    box-shadow: 0 6px 8px -2px rgba(239, 68, 68, 0.5);
+}
+
+#message {
+    margin-top: 1.5rem;
+    font-size: 1.1rem;
+    font-weight: 500;
+    min-height: 1.5rem;
+    color: #4ade80;
+    /* emerald green success color */
+    opacity: 0;
+    transition: opacity 0.4s ease;
+}
+
+#message.show {
+    opacity: 1;
+}
+
+#fileName {
+    margin-top: 0.5rem;
+    font-size: 0.85rem;
+    color: var(--text-main);
+    word-break: break-all;
+    z-index: 2;
+}
+
+#imagePreview {
+    max-width: 100%;
+    max-height: 200px;
+    object-fit: contain;
+    border-radius: 0.5rem;
+    margin-top: 1rem;
+    z-index: 1;
+}
+
+.file-label.has-image {
+    padding: 1rem;
+}
+
+.impact-panel {
+    background-color: var(--surface-bg);
+    padding: 2.5rem;
+    border-radius: 1rem;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    max-width: 350px;
+    width: 100%;
+    margin-left: 5vw;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    animation: slideInRight 0.5s ease forwards;
+}
+
+@keyframes slideInRight {
+    from {
+        opacity: 0;
+        transform: translateX(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.impact-panel h2 {
+    margin-top: 0;
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--text-main);
+    margin-bottom: 1.5rem;
+    text-align: center;
+}
+
+.impact-content p {
+    font-size: 1rem;
+    color: var(--text-secondary);
+    margin: 0.75rem 0;
+    background-color: #f1f5f9;
+    padding: 0.75rem 1rem;
+    border-radius: 0.5rem;
+    display: flex;
+    justify-content: space-between;
+}
+
+.impact-content p strong {
+    color: var(--text-main);
+}
+
+.map-btn {
+    margin-top: 2rem;
+    background-color: #10b981;
+    /* different color to distinguish from submit */
+    align-self: flex-end;
+    /* right bottom corner */
+    width: auto;
+    box-shadow: 0 4px 6px -1px rgba(16, 185, 129, 0.3);
+}
+
+.map-btn:hover {
+    background-color: #059669;
+    box-shadow: 0 6px 8px -2px rgba(16, 185, 129, 0.5);
+}

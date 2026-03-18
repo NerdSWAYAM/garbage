@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='register.css') }}">
+</head>
+<body>
+    <nav>
+        <div class="nav-left">
+            <a href="/">Waste Classifier</a>
+        </div>
+        <div class="nav-right">
+            <a href="/login">Login</a>
+            <a href="/register">Register</a>
+            <a href="/dashboard">Dashboard</a>
+        </div>
+    </nav>
+    <div class="container">
+        <!-- <h1>Register</h1> -->
+        <form action="{{ url_for('register') }}" method="post">
+            <input type="text" name="first_name" placeholder="First Name" required>
+            <input type="text" name="last_name" placeholder="Last Name" required>
+            <input type="text" name="username" placeholder="Username" required>
+            <input type="password" name="password" placeholder="Password" required>
+            <div class="location-group">
+                <input type="text" id="location-info" name="location" placeholder="Location" required readonly>            
+                <button type="button" id="get-location"><img src="{{ url_for('static', filename='location.png')}}" alt="Location" class="location-img"></button>
+            </div>
+            <button type="submit">Register</button>
+        </form>
+        <p>Already have an account? <a href="{{ url_for('login') }}">Login</a></p>
+    </div>
+    <script>
+        const button = document.getElementById("get-location");
+const locationInfo = document.getElementById("location-info");
+
+button.addEventListener("click", () => {
+    // Check if the browser supports the Geolocation API
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(showPosition, showError);
+    } else {
+        locationInfo.value = "Geolocation is not supported by this browser.";
+    }
+});
+
+function showPosition(position) {
+    const latitude = position.coords.latitude;
+    const longitude = position.coords.longitude;
+    locationInfo.value = `${latitude.toFixed(5)}, ${longitude.toFixed(5)}`;
+}
+
+function showError(error) {
+    switch(error.code) {
+        case error.PERMISSION_DENIED:
+            locationInfo.value = "User denied the request for Geolocation.";
+            break;
+        case error.POSITION_UNAVAILABLE:
+            locationInfo.value = "Location information is unavailable.";
+            break;
+        case error.TIMEOUT:
+            locationInfo.value = "The request to get user location timed out.";
+            break;
+        case error.UNKNOWN_ERROR:
+            locationInfo.value = "An unknown error occurred.";
+            break;
+    }
+}
+    </script>
+</body>
+</html>

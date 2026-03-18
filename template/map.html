@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Waste Map</title>
+
+  <!-- Leaflet CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
+
+  <style>
+    #map {
+      height: 500px;
+      width: 100%;
+    }
+  </style>
+</head>
+
+<body>
+
+<h2>Nearby Waste Disposal Areas</h2>
+<div id="map"></div>
+
+<!-- Leaflet JS -->
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+<script>
+let map;
+
+// Step 1: Get user location
+navigator.geolocation.getCurrentPosition(position => {
+  const lat = position.coords.latitude;
+  const lon = position.coords.longitude;
+
+  // Step 2: Initialize map
+  map = L.map('map').setView([lat, lon], 13);
+
+  // Step 3: Load OpenStreetMap tiles
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; OpenStreetMap contributors'
+  }).addTo(map);
+
+  // Step 4: Add user marker
+  L.marker([lat, lon]).addTo(map)
+    .bindPopup("You are here")
+    .openPopup();
+
+  // Step 5: Fetch nearby waste locations
+  fetchPlaces(lat, lon);
+
+});
+
+function fetchPlaces(lat, lon) {
+
+  // We use [timeout:25] and search for 'nwr' (nodes, ways, relations)
+  // because many waste facilities are mapped as areas or polygons, not just points.
+  // We also added 'waste_basket' to show more generic bins.
+  // 'out center;' ensures we get a single lat/lon coordinate even for areas.
+  const query = `
+  [out:json][timeout:25];
+  (
+    nwr["amenity"="recycling"](around:5000, ${lat}, ${lon});
+    nwr["amenity"="waste_disposal"](around:5000, ${lat}, ${lon});
+    nwr["amenity"="waste_basket"](around:5000, ${lat}, ${lon});
+  );
+  out center;
+  `;
+
+  fetch("https://overpass-api.de/api/interpreter", {
+    method: "POST",
+    body: query
+  })
+  .then(res => res.json())
+  .then(data => {
+    
+    if (!data.elements || data.elements.length === 0) {
+        console.log("No waste points found in this area.");
+        L.popup()
+          .setLatLng([lat, lon])
+          .setContent("No garbage/recycling points found within 5km.")
+          .openOn(map);
+        return;
+    }
+
+    data.elements.forEach(place => {
+      // If it's a node, coords are in place.lat/lon
+      // If it's a way/relation, we specified 'out center;', so coords are in place.center.lat/lon
+      const pLat = place.lat || (place.center && place.center.lat);
+      const pLon = place.lon || (place.center && place.center.lon);
+      
+      if (!pLat || !pLon) return; // safety check
+      
+      // Determine what to call it based on the tags
+      let name = place.tags?.name;
+      if (!name) {
+          if (place.tags?.amenity === "waste_basket") name = "Waste Basket";
+          else if (place.tags?.amenity === "recycling") name = "Recycling Center";
+          else if (place.tags?.amenity === "waste_disposal") name = "Waste Disposal";
+          else name = "Waste Facility";
+      }
+
+      L.marker([pLat, pLon]).addTo(map)
+        .bindPopup(name);
+    });
+
+  })
+  .catch(err => {
+      console.error("Failed to fetch from Overpass API:", err);
+  });
+}
+</script>
+
+</body>
+</html>

@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='dashboard.css') }}">
+</head>
+<body>
+    <nav>
+        <div class="nav-left">
+            <a href="/">Waste Classifier</a>
+        </div>
+        <div class="nav-right">
+            <a href="/login">Login</a>
+            <a href="/register">Register</a>
+            <a href="/dashboard">Dashboard</a>
+        </div>
+    </nav>
+    <div class="container">
+        <h1>Dashboard</h1>
+        <p class="subtitle">Welcome to the dashboard</p>
+        <button onclick="window.location.href='/'">Go to Home</button>
+    </div>
+</body>
+</html>
