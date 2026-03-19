@@ -3,227 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard – EcoScan</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <title>Dashboard</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='dashboard.css') }}">
 </head>
 <body>
-
-<nav>
-    <a href="/" class="nav-brand"><span>♻</span> EcoScan</a>
-    <div class="nav-links">
-        <a href="/dashboard" class="active">Dashboard</a>
-        <a href="/">Scan</a>
-        <a href="/map">Find Bins</a>
-        <a href="/logout" class="nav-logout">Sign Out</a>
+    <nav>
+        <div class="nav-left">
+            <a href="/">Waste Classifier</a>
+        </div>
+        <div class="nav-right">
+            <a href="/login">Login</a>
+            <a href="/register">Register</a>
+            <a href="/dashboard">Dashboard</a>
+            <a href="/logout">Logout</a>
+        </div>
+    </nav>
+    <div class="container">
+        <h1>Dashboard</h1>
+        <p class="subtitle">Welcome to the dashboard</p>
+        <button onclick="window.location.href='/'">Go to Home</button>
+        <button onclick="window.location.href='/logout'">Logout</button>
     </div>
-    <button class="hamburger" onclick="toggleMenu()">
-        <span></span><span></span><span></span>
-    </button>
-</nav>
-
-<div class="mobile-menu" id="mobileMenu">
-    <a href="/dashboard">Dashboard</a>
-    <a href="/">Scan Waste</a>
-    <a href="/map">Find Bins</a>
-    <a href="/logout">Sign Out</a>
-</div>
-
-<main class="dashboard">
-
-    <!-- TOP ROW: Profile + Stats -->
-    <div class="top-row">
-        <div class="profile-card card">
-            <div class="profile-avatar">{{ session['user'][0].upper() }}</div>
-            <div class="profile-info">
-                <h2 class="profile-name">Hello 👋</h2>
-                <p class="profile-email">{{ session['user'] }}</p>
-            </div>
-            <div class="profile-badge">
-                <span class="badge-dot"></span>
-                Active
-            </div>
-        </div>
-
-        <div class="stat-card card">
-            <div class="stat-icon">📦</div>
-            <div>
-                <span class="stat-num">{{ values | sum if values else 0 }}</span>
-                <span class="stat-lbl">Total Scans</span>
-            </div>
-        </div>
-
-        <div class="stat-card card">
-            <div class="stat-icon">♻️</div>
-            <div>
-                <span class="stat-num">{{ labels | length }}</span>
-                <span class="stat-lbl">Categories Found</span>
-            </div>
-        </div>
-
-        <div class="stat-card card">
-            <div class="stat-icon">🌍</div>
-            <div>
-                <span class="stat-num">{{ history | length }}</span>
-                <span class="stat-lbl">Recent Scans</span>
-            </div>
-        </div>
-    </div>
-
-    <!-- MAIN GRID -->
-    <div class="main-grid">
-
-        <!-- CHART CARD -->
-        <div class="card chart-card">
-            <div class="card-header">
-                <h3 class="card-title">Waste Distribution</h3>
-                <span class="card-sub">By category</span>
-            </div>
-            {% if labels %}
-            <div class="chart-wrap">
-                <canvas id="chart"></canvas>
-            </div>
-            {% else %}
-            <div class="empty-state">
-                <span class="empty-icon">📊</span>
-                <p>No scan data yet</p>
-                <p class="empty-sub">Start scanning to see your waste distribution</p>
-                <a href="/" class="empty-cta">Scan Now</a>
-            </div>
-            {% endif %}
-        </div>
-
-        <!-- HISTORY CARD -->
-        <div class="card history-card">
-            <div class="card-header">
-                <h3 class="card-title">Recent Scans</h3>
-                <span class="card-sub">Last {{ history | length }} items</span>
-            </div>
-            {% if history %}
-            <div class="history-list">
-                {% for item in history %}
-                <div class="history-item">
-                    <div class="history-icon-wrap">
-                        {% set cat = item[0].lower() %}
-                        {% if 'plastic' in cat %}🧴
-                        {% elif 'paper' in cat or 'cardboard' in cat %}📄
-                        {% elif 'metal' in cat or 'can' in cat %}🥫
-                        {% elif 'glass' in cat %}🫙
-                        {% elif 'organic' in cat or 'food' in cat %}🌿
-                        {% elif 'electronic' in cat or 'battery' in cat %}🔋
-                        {% else %}🗑️
-                        {% endif %}
-                    </div>
-                    <div class="history-info">
-                        <span class="history-cat">{{ item[0] }}</span>
-                        <span class="history-time">{{ item[1].strftime('%b %d, %Y %H:%M') if item[1] else '—' }}</span>
-                    </div>
-                    <div class="history-tag">Scanned</div>
-                </div>
-                {% endfor %}
-            </div>
-            {% else %}
-            <div class="empty-state">
-                <span class="empty-icon">🔍</span>
-                <p>No scans yet</p>
-                <p class="empty-sub">Your scan history will appear here</p>
-                <a href="/" class="empty-cta">Start Scanning</a>
-            </div>
-            {% endif %}
-        </div>
-
-    </div>
-
-    <!-- QUICK ACTIONS -->
-    <div class="card actions-card">
-        <h3 class="card-title" style="margin-bottom:16px;">Quick Actions</h3>
-        <div class="actions-row">
-            <a href="/" class="action-btn action-primary">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/>
-                    <circle cx="12" cy="13" r="4"/>
-                </svg>
-                New Scan
-            </a>
-            <a href="/map" class="action-btn action-secondary">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/>
-                    <circle cx="12" cy="10" r="3"/>
-                </svg>
-                Find Bins
-            </a>
-            <a href="/logout" class="action-btn action-danger">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/>
-                    <polyline points="16,17 21,12 16,7"/>
-                    <line x1="21" y1="12" x2="9" y2="12"/>
-                </svg>
-                Sign Out
-            </a>
-        </div>
-    </div>
-
-</main>
-
-<script>
-{% if labels %}
-const labels = {{ labels | tojson | safe }};
-const values = {{ values | tojson | safe }};
-
-const ctx = document.getElementById('chart').getContext('2d');
-
-new Chart(ctx, {
-    type: 'doughnut',
-    data: {
-        labels: labels,
-        datasets: [{
-            data: values,
-            backgroundColor: [
-                '#4ade80', '#22c55e', '#86efac',
-                '#60a5fa', '#34d399', '#a78bfa',
-                '#fb923c', '#f87171'
-            ],
-            borderColor: '#161b22',
-            borderWidth: 3,
-            hoverBorderWidth: 0,
-        }]
-    },
-    options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        cutout: '65%',
-        plugins: {
-            legend: {
-                position: 'bottom',
-                labels: {
-                    color: '#8b949e',
-                    font: { family: "'DM Sans', sans-serif", size: 12 },
-                    padding: 16,
-                    boxWidth: 10,
-                    boxHeight: 10,
-                    usePointStyle: true,
-                    pointStyle: 'circle',
-                }
-            },
-            tooltip: {
-                backgroundColor: '#1c2330',
-                titleColor: '#f0f6fc',
-                bodyColor: '#8b949e',
-                borderColor: 'rgba(255,255,255,0.1)',
-                borderWidth: 1,
-                padding: 12,
-                callbacks: {
-                    label: ctx => ` ${ctx.label}: ${ctx.raw} scan${ctx.raw !== 1 ? 's' : ''}`
-                }
-            }
-        }
-    }
-});
-{% endif %}
-
-function toggleMenu() {
-    document.getElementById('mobileMenu').classList.toggle('open');
-}
-</script>
 </body>
 </html>

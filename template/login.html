@@ -3,107 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sign In – EcoScan</title>
+    <title>Login</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='login.css') }}">
 </head>
 <body>
     <nav>
-        <a href="/" class="nav-brand"><span>♻</span> EcoScan</a>
-        <div class="nav-links">
-            <a href="/login" class="active">Sign In</a>
-            {% if session.get('user') %}
-            <a href="/logout" class="nav-cta nav-logout-btn">Sign Out</a>
-            {% else %}
-            <a href="/register" class="nav-cta">Register</a>
-            {% endif %}
+        <div class="nav-left">
+            <a href="/">Waste Classifier</a>
+        </div>
+        <div class="nav-right">
+            <a href="/login">Login</a>
+            <a href="/register">Register</a>
+            <a href="/dashboard">Dashboard</a>
         </div>
     </nav>
-
-    <div class="auth-page">
-        <div class="auth-card">
-            <div class="auth-header">
-                <div class="auth-icon">♻</div>
-                <h1>Welcome back</h1>
-                <p>Sign in to track your waste classification history</p>
-            </div>
-
-            <form action="{{ url_for('login') }}" method="post" id="loginForm">
-                <div class="field-group">
-                    <label for="email">Email address</label>
-                    <div class="input-wrap">
-                        <svg class="input-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
-                            <polyline points="22,6 12,13 2,6"/>
-                        </svg>
-                        <input type="email" id="email" name="email" placeholder="you@example.com" required autocomplete="email">
-                    </div>
-                </div>
-
-                <div class="field-group">
-                    <div class="label-row">
-                        <label for="password">Password</label>
-                        <a href="/forgot-password" class="forgot-link">Forgot password?</a>
-                    </div>
-                    <div class="input-wrap">
-                        <svg class="input-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
-                            <path d="M7 11V7a5 5 0 0110 0v4"/>
-                        </svg>
-                        <input type="password" id="password" name="password" placeholder="••••••••" required autocomplete="current-password">
-                        <button type="button" class="eye-btn" onclick="togglePassword('password', this)">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-                                <circle cx="12" cy="12" r="3"/>
-                            </svg>
-                        </button>
-                    </div>
-                </div>
-
-                {% if error %}
-                <div class="alert-error">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-                    {{ error }}
-                </div>
-                {% endif %}
-
-                <button type="submit" class="submit-btn">
-                    <span>Sign In</span>
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                        <path d="M5 12h14M12 5l7 7-7 7"/>
-                    </svg>
-                </button>
-            </form>
-
-            <p class="auth-switch">
-                Don't have an account? <a href="{{ url_for('register') }}">Create one</a>
-            </p>
-        </div>
-
-        <div class="auth-visual">
-            <div class="visual-content">
-                <div class="vis-stat">
-                    <span class="vis-num">12+</span>
-                    <span class="vis-label">Waste categories</span>
-                </div>
-                <div class="vis-stat">
-                    <span class="vis-num">2s</span>
-                    <span class="vis-label">Average scan time</span>
-                </div>
-                <div class="vis-stat">
-                    <span class="vis-num">∞</span>
-                    <span class="vis-label">Scans stored</span>
-                </div>
-                <p class="vis-quote">"Every scan helps build a cleaner planet."</p>
-            </div>
-        </div>
+    <div class="container">
+        <!-- <h1>Login</h1> -->
+        <form action="{{ url_for('login') }}" method="post">
+            <input type="email" name="email" placeholder="Email" required>
+            <input type="password" name="password" placeholder="Password" required>
+            <button type="submit">Login</button>
+        </form>
+        <p>Don't have an account? <a href="{{ url_for('register') }}">Register</a></p>
     </div>
-
-    <script>
-    function togglePassword(id, btn) {
-        const inp = document.getElementById(id);
-        inp.type = inp.type === 'password' ? 'text' : 'password';
-        btn.classList.toggle('active');
-    }
-    </script>
 </body>
 </html>
