@@ -3,70 +3,190 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Register</title>
+    <title>Register – EcoScan</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='register.css') }}">
 </head>
 <body>
     <nav>
-        <div class="nav-left">
-            <a href="/">Waste Classifier</a>
-        </div>
-        <div class="nav-right">
-            <a href="/login">Login</a>
-            <a href="/register">Register</a>
-            <a href="/dashboard">Dashboard</a>
+        <a href="/" class="nav-brand"><span>♻</span> EcoScan</a>
+        <div class="nav-links">
+            <a href="/login">Sign In</a>
+            {% if session.get('user') %}
+            <a href="/logout" class="nav-cta nav-logout-btn">Sign Out</a>
+            {% else %}
+            <a href="/register" class="nav-cta active">Register</a>
+            {% endif %}
         </div>
     </nav>
-    <div class="container">
-        <!-- <h1>Register</h1> -->
-        <form action="{{ url_for('register') }}" method="post">
-            <input type="text" name="firstname" placeholder="First Name" required>
-            <input type="text" name="lastname" placeholder="Last Name" required>
-            <input type="email" name="email" placeholder="Email" required>
-            <input type="password" name="password" placeholder="Password" required>
-            <div class="location-group">
-                <input type="text" id="location-info" name="location" placeholder="Location" required readonly>            
-                <button type="button" id="get-location"><img src="{{ url_for('static', filename='location.png')}}" alt="Location" class="location-img"></button>
+
+    <div class="auth-page">
+        <div class="auth-card">
+            <div class="auth-header">
+                <div class="auth-icon">🌱</div>
+                <h1>Join EcoScan</h1>
+                <p>Create your account and start scanning responsibly</p>
             </div>
-            <button type="submit">Register</button>
-        </form>
-        <p>Already have an account? <a href="{{ url_for('login') }}">Login</a></p>
+
+            <form action="{{ url_for('register') }}" method="post" id="registerForm">
+                <div class="field-row">
+                    <div class="field-group">
+                        <label for="firstname">First Name</label>
+                        <div class="input-wrap">
+                            <svg class="input-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/>
+                                <circle cx="12" cy="7" r="4"/>
+                            </svg>
+                            <input type="text" id="firstname" name="firstname" placeholder="John" required autocomplete="given-name">
+                        </div>
+                    </div>
+                    <div class="field-group">
+                        <label for="lastname">Last Name</label>
+                        <div class="input-wrap">
+                            <svg class="input-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/>
+                                <circle cx="12" cy="7" r="4"/>
+                            </svg>
+                            <input type="text" id="lastname" name="lastname" placeholder="Doe" required autocomplete="family-name">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="field-group">
+                    <label for="email">Email address</label>
+                    <div class="input-wrap">
+                        <svg class="input-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                            <polyline points="22,6 12,13 2,6"/>
+                        </svg>
+                        <input type="email" id="email" name="email" placeholder="you@example.com" required autocomplete="email">
+                    </div>
+                </div>
+
+                <div class="field-group">
+                    <label for="password">Password</label>
+                    <div class="input-wrap">
+                        <svg class="input-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                            <path d="M7 11V7a5 5 0 0110 0v4"/>
+                        </svg>
+                        <input type="password" id="password" name="password" placeholder="Min. 8 characters" required autocomplete="new-password" oninput="checkStrength(this.value)">
+                        <button type="button" class="eye-btn" onclick="togglePassword('password', this)">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                                <circle cx="12" cy="12" r="3"/>
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="strength-bar" id="strengthBar">
+                        <div class="strength-fill" id="strengthFill"></div>
+                    </div>
+                    <span class="strength-label" id="strengthLabel"></span>
+                </div>
+
+                <div class="field-group">
+                    <label for="location">Location</label>
+                    <div class="location-wrap">
+                        <div class="input-wrap" style="flex:1">
+                            <svg class="input-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/>
+                                <circle cx="12" cy="10" r="3"/>
+                            </svg>
+                            <input type="text" id="location-info" name="location" placeholder="Click pin to detect location (optional)" readonly>
+                        </div>
+                        <button type="button" id="get-location" class="loc-btn" title="Detect my location">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="3"/>
+                                <path d="M12 2v3M12 19v3M2 12h3M19 12h3"/>
+                                <circle cx="12" cy="12" r="8"/>
+                            </svg>
+                            <span id="locBtnText">Detect</span>
+                        </button>
+                    </div>
+                    <span class="loc-status" id="locStatus"></span>
+                </div>
+
+                {% if error %}
+                <div class="alert-error">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                    {{ error }}
+                </div>
+                {% endif %}
+
+                <button type="submit" class="submit-btn">
+                    <span>Create Account</span>
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                        <path d="M5 12h14M12 5l7 7-7 7"/>
+                    </svg>
+                </button>
+            </form>
+
+            <p class="auth-switch">
+                Already have an account? <a href="{{ url_for('login') }}">Sign in</a>
+            </p>
+        </div>
     </div>
+
     <script>
-        const button = document.getElementById("get-location");
-const locationInfo = document.getElementById("location-info");
-
-button.addEventListener("click", () => {
-    // Check if the browser supports the Geolocation API
-    if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(showPosition, showError);
-    } else {
-        locationInfo.value = "Geolocation is not supported by this browser.";
+    function togglePassword(id, btn) {
+        const inp = document.getElementById(id);
+        inp.type = inp.type === 'password' ? 'text' : 'password';
+        btn.classList.toggle('active');
     }
-});
 
-function showPosition(position) {
-    const latitude = position.coords.latitude;
-    const longitude = position.coords.longitude;
-    locationInfo.value = `${latitude.toFixed(5)}, ${longitude.toFixed(5)}`;
-}
+    function checkStrength(val) {
+        const fill = document.getElementById('strengthFill');
+        const label = document.getElementById('strengthLabel');
+        let score = 0;
+        if (val.length >= 8) score++;
+        if (/[A-Z]/.test(val)) score++;
+        if (/[0-9]/.test(val)) score++;
+        if (/[^A-Za-z0-9]/.test(val)) score++;
 
-function showError(error) {
-    switch(error.code) {
-        case error.PERMISSION_DENIED:
-            locationInfo.value = "User denied the request for Geolocation.";
-            break;
-        case error.POSITION_UNAVAILABLE:
-            locationInfo.value = "Location information is unavailable.";
-            break;
-        case error.TIMEOUT:
-            locationInfo.value = "The request to get user location timed out.";
-            break;
-        case error.UNKNOWN_ERROR:
-            locationInfo.value = "An unknown error occurred.";
-            break;
+        const configs = [
+            { width: '0%', color: '', text: '' },
+            { width: '25%', color: '#ef4444', text: 'Weak' },
+            { width: '50%', color: '#f59e0b', text: 'Fair' },
+            { width: '75%', color: '#84cc16', text: 'Good' },
+            { width: '100%', color: '#4ade80', text: 'Strong 💪' },
+        ];
+        const cfg = configs[score];
+        fill.style.width = cfg.width;
+        fill.style.background = cfg.color;
+        label.textContent = cfg.text;
+        label.style.color = cfg.color;
     }
-}
+
+    const locBtn = document.getElementById('get-location');
+    const locInfo = document.getElementById('location-info');
+    const locStatus = document.getElementById('locStatus');
+    const locBtnText = document.getElementById('locBtnText');
+
+    locBtn.addEventListener('click', () => {
+        if (!navigator.geolocation) {
+            locStatus.textContent = 'Geolocation not supported';
+            locStatus.style.color = '#ef4444';
+            return;
+        }
+        locBtnText.textContent = '...';
+        locBtn.disabled = true;
+        navigator.geolocation.getCurrentPosition(
+            pos => {
+                const lat = pos.coords.latitude.toFixed(5);
+                const lon = pos.coords.longitude.toFixed(5);
+                locInfo.value = `${lat}, ${lon}`;
+                locStatus.textContent = '✓ Location detected';
+                locStatus.style.color = '#4ade80';
+                locBtnText.textContent = 'Detect';
+                locBtn.disabled = false;
+            },
+            err => {
+                locStatus.textContent = 'Could not get location: ' + err.message;
+                locStatus.style.color = '#ef4444';
+                locBtnText.textContent = 'Detect';
+                locBtn.disabled = false;
+            }
+        );
+    });
     </script>
 </body>
 </html>
